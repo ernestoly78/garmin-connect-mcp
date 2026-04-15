@@ -1,26 +1,27 @@
 import express from "express";
-import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 
-// ⚠️ importa donde registras tus tools
-import "./index.js";
+// 🔥 IMPORTANTE: importar el build real
+import * as mcpModule from "./index.cjs";
 
 const app = express();
 app.use(express.json());
 
-// 🔥 endpoint MCP
 app.post("/mcp", async (req, res) => {
   try {
-    const server = new McpServer({
-      name: "garmin-mcp",
-      version: "1.0.0"
-    });
+    // 🔥 usa el server exportado o inicializa correctamente
+    if (!mcpModule || !mcpModule.default) {
+      throw new Error("MCP not initialized correctly");
+    }
+
+    const server = mcpModule.default;
 
     const result = await server.handleRequest(req.body);
 
     res.json(result);
-  } catch (e) {
-    console.error(e);
-    res.status(500).json({ error: "MCP error" });
+
+  } catch (e: any) {
+    console.error("❌ MCP ERROR:", e);
+    res.status(500).json({ error: e.message });
   }
 });
 
