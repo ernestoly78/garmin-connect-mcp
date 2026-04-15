@@ -1,23 +1,40 @@
 import express from "express";
-import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-
-// 🔥 esto ejecuta index.ts y registra tools
-import "./index";
+import { spawn } from "child_process";
 
 const app = express();
 app.use(express.json());
 
-const server = new McpServer({
-  name: "garmin-mcp",
-  version: "1.0.0"
-});
-
 app.post("/mcp", async (req, res) => {
   try {
-    const result = await server.handleRequest(req.body);
-    res.json(result);
+    const mcp = spawn("node", ["dist/index.cjs"]);
+
+    let output = "";
+    let error = "";
+
+    mcp.stdout.on("data", (data) => {
+      output += data.toString();
+    });
+
+    mcp.stderr.on("data", (data) => {
+      error += data.toString();
+    });
+
+    mcp.on("close", () => {
+      try {
+        const parsed = JSON.parse(output);
+        res.json(parsed);
+      } catch (e) {
+        console.error("❌ PARSE ERROR:", output);
+        res.status(500).json({ error: "Invalid MCP response" });
+      }
+    });
+
+    // 🔥 enviar request MCP real
+    mcp.stdin.write(JSON.stringify(req.body) + "\n");
+    mcp.stdin.end();
+
   } catch (e: any) {
-    console.error("❌ MCP ERROR FULL:", e);
+    console.error("❌ MCP WRAPPER ERROR:", e);
     res.status(500).json({ error: e.message });
   }
 });
