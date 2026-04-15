@@ -6,7 +6,7 @@ export default defineConfig({
     'src/setup.ts',
     'src/http-wrapper.ts'
   ],
-  format: ['cjs'], // 👈 CAMBIO CLAVE
+  format: ['cjs'],
   target: 'node20',
   clean: true
 });
