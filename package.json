@@ -17,6 +17,16 @@
     "setup": "node build/setup.js",
     "prepublishOnly": "tsup"
   },
+
+  👇👇👇 AQUÍ MISMO 👇👇👇
+  "tsup": {
+    "entry": [
+      "src/index.ts",
+      "src/setup.ts",
+      "src/http-wrapper.ts"
+    ]
+  },
+
   "keywords": [
     "garmin",
     "garmin-connect",
