@@ -6,9 +6,7 @@ export default defineConfig({
     'src/setup.ts',
     'src/http-wrapper.ts'
   ],
-  format: ['esm'],
+  format: ['cjs'], // 👈 CAMBIO CLAVE
   target: 'node20',
-  outDir: 'build',
-  clean: true,
-  banner: { js: '#!/usr/bin/env node' },
+  clean: true
 });
